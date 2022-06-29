@@ -5,7 +5,7 @@ locals {
   azs                 = slice(data.aws_availability_zones.available.names, 0, 3)
   vpc_private_subnets = ["10.0.0.0/22", "10.0.4.0/22", "10.0.8.0/22"]
   vpc_public_subnets  = ["10.0.12.0/22", "10.0.16.0/22", "10.0.20.0/22"]
-  ecr_repository_name = "devops-challange"
+  ecr_repository_name = "comments-app"
 
   tags = {
     Cluster = local.cluster_name
