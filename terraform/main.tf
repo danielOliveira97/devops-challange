@@ -128,3 +128,37 @@ module "iam_group_with_policies" {
     "${module.iam_policy.arn}",
   ]
 }
+
+data "github_actions_public_key" "gihub_public_key" {
+  repository = var.app_github_repository
+}
+
+resource "github_actions_secret" "gh_secret_aws_access_key_id" {
+  repository       = var.app_github_repository
+  secret_name      = "AWS_ACCESS_KEY_ID"
+  plaintext_value  = var.gh_secret_aws_access_key_id
+}
+
+resource "github_actions_secret" "gh_secret_aws_secret_access_key" {
+  repository       = var.app_github_repository
+  secret_name      = "AWS_SECRET_ACCESS_KEY"
+  encrypted_value  = var.gh_secret_aws_secret_access_key
+}
+
+resource "github_actions_secret" "gh_secret_aws_region" {
+  repository       = var.app_github_repository
+  secret_name      = "AWS_REGION"
+  encrypted_value  = local.region
+}
+
+resource "github_actions_secret" "gh_secret_kube_config_data" {
+  repository       = var.app_github_repository
+  secret_name      = "KUBE_CONFIG_DATA"
+  encrypted_value  = local.kubeconfig
+}
+
+resource "github_actions_secret" "gh_secret_ecr_repository" {
+  repository       = var.app_github_repository
+  secret_name      = "ECR_REPOSITORY"
+  encrypted_value  = data.aws_ecr_repository.service.repository_url 
+}
