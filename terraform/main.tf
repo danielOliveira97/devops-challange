@@ -61,15 +61,25 @@ module "eks_blueprints_kubernetes_addons" {
   enable_amazon_eks_vpc_cni    = true
   enable_amazon_eks_adot      = true
 
-  #K8s Add-ons
+  # K8s Add-ons
   #enable_aws_for_fluentbit            = true
   enable_aws_load_balancer_controller = true
   enable_cluster_autoscaler           = true
   enable_metrics_server               = true
 
+  # NGINX INGRESS CONTROLLER 
   enable_ingress_nginx = true
   ingress_nginx_helm_config = {
     version = "4.0.17"
     values  = [templatefile("${path.module}/nginx_values.yaml", {})]
+  }
+}
+
+resource "aws_ecr_repository" "app_repository_image" {
+  name                 = local.ecr_repository_name
+  image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
+  
+  image_scanning_configuration {
+    scan_on_push = false
   }
 }
