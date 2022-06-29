@@ -83,3 +83,48 @@ resource "aws_ecr_repository" "app_repository_image" {
     scan_on_push = false
   }
 }
+
+module "iam_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  name        = "github-ecr-policy"
+  path        = "/"
+  description = "Policy for github actions pipelines"
+  policy = <<EOF
+{
+  "Version":"2012-10-17",
+  "Statement":[
+    {
+      "Sid":"AllowPush",
+      "Effect":"Allow",
+      "Action":[
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:PutImage",
+          "ecr:InitiateLayerUpload",
+          "ecr:UploadLayerPart",
+          "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "${data.aws_ecr_repository.service.arn}"
+    }
+  ]
+}
+EOF
+}
+
+module "iam_user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  name = local.github_deploy_user
+  create_iam_user_login_profile = false
+  create_iam_access_key         = true
+}
+
+module "iam_group_with_policies" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-group-with-policies"
+  name = "github-actions"
+  group_users = ["${module.iam_user.iam_user_name}"]
+  attach_iam_self_management_policy = true
+  custom_group_policy_arns = [
+    "${module.iam_policy.arn}",
+  ]
+}
