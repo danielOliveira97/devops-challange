@@ -46,3 +46,24 @@ module "eks_blueprints" {
     }
   }
 }
+
+module "eks_blueprints_kubernetes_addons" {
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.2.0"
+
+  eks_cluster_id       = module.eks_blueprints.eks_cluster_id
+  eks_cluster_endpoint = module.eks_blueprints.eks_cluster_endpoint
+  eks_oidc_provider    = module.eks_blueprints.oidc_provider
+  eks_cluster_version  = module.eks_blueprints.eks_cluster_version
+
+  # EKS Managed Add-ons
+  enable_amazon_eks_coredns    = true
+  enable_amazon_eks_kube_proxy = true
+  enable_amazon_eks_vpc_cni    = true
+  enable_amazon_eks_adot      = true
+
+  #K8s Add-ons
+  #enable_aws_for_fluentbit            = true
+  enable_aws_load_balancer_controller = true
+  enable_cluster_autoscaler           = true
+  enable_metrics_server               = true
+}
