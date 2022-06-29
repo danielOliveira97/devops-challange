@@ -9,3 +9,7 @@ data "aws_eks_cluster" "cluster" {
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks_blueprints.eks_cluster_id
 }
+
+data "aws_ecr_repository" "service" {
+  name = local.ecr_repository_name
+}
