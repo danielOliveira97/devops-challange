@@ -3,3 +3,9 @@ variable "immutable_ecr_repositories" {
   description = "value"
   default     = false
 }
+
+variable "github_token" {
+  type        = string
+  description = "GitHub Token"
+  default     = ""
+}
