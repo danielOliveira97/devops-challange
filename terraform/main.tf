@@ -25,3 +25,13 @@ module "vpc" {
     "kubernetes.io/role/internal-elb"             = "1"
   }
 }
+
+module "eks_blueprints" {
+  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.2.0"
+
+  # EKS CLUSTER
+  cluster_name       = local.cluster_name
+  cluster_version    = "1.22"
+  vpc_id             = module.vpc.vpc_id
+  private_subnet_ids = module.vpc.private_subnets
+}
