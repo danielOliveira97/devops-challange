@@ -11,5 +11,5 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 data "aws_ecr_repository" "service" {
-  name = local.ecr_repository_name
+  name = aws_ecr_repository.app_repository_image.name
 }
