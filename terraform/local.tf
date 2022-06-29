@@ -7,7 +7,7 @@ locals {
   vpc_public_subnets  = ["10.0.12.0/22", "10.0.16.0/22", "10.0.20.0/22"]
   ecr_repository_name = "comments-app"
   github_deploy_user  = "gh_actions_user"
-  kubeconfig = <<KUBECONFIG
+  kubeconfig          = <<KUBECONFIG
 apiVersion: v1
 clusters:
 - cluster:
@@ -34,7 +34,7 @@ users:
         - "--cluster-name"
         - "${local.cluster_name}"
         - "--region"
-        - "${var.aws-region}"
+        - "${local.region}"
 KUBECONFIG
 
   tags = {

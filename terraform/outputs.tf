@@ -61,5 +61,5 @@ output "configure_kubectl" {
 }
 
 output "kubeconfig" {
-  value = "${local.kubeconfig}"
+  value = local.kubeconfig
 }
