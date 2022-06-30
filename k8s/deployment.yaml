@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: comments-app
-        image: app-image
+        image: APP_IMAGE
         ports:
           - containerPort: 5000
         resources:
