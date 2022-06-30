@@ -1,9 +1,10 @@
 name: "Terraform"
-
-on:
+on: 
   push:
     branches:
       - main
+    paths:
+      - terraform/**
   pull_request:
 
 jobs:
