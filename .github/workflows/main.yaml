@@ -42,7 +42,7 @@ jobs:
         ECR_REPOSITORY: comments-app
         IMAGE_TAG: ${{ github.sha }}
       with:
-        args: kubectl apply -f ./k8s --recursive
+        args: apply -f ./k8s --recursive
         
     - name: verify deployment
       uses: kodermax/kubectl-aws-eks@master
