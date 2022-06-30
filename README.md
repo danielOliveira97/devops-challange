@@ -68,16 +68,6 @@ terraform plan
 
 #### Step 5: Finally, Terraform APPLY
 
-**Deploy the pattern**
-
-```sh
-terraform apply
-```
-
-Enter `yes` to apply.
-
-### Step 6: Finally, Terraform APPLY
-
 We will leverage Terraform's [target](https://learn.hashicorp.com/tutorials/terraform/resource-targeting?in=terraform/cli) functionality to deploy a VPC, an EKS Cluster, and Kubernetes add-ons in separate steps.
 
 **Deploy the VPC**. This step will take roughly 3 minutes to complete.
