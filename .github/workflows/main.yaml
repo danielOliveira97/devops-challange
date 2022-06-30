@@ -52,6 +52,7 @@ jobs:
       env:
         K8S_YAML_DIR: ./k8s 
         IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+        REPOSITORY: comments-app
       run: |
         # Setup kustomize
         cd $K8S_YAML_DIR
