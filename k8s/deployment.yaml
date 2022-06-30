@@ -7,6 +7,10 @@ spec:
     matchLabels:
       app: comments-app
   replicas: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -14,33 +18,13 @@ spec:
     spec:
       containers:
       - name: comments-app
-        image: ECR_IMAGE
+        image: app-image
         ports:
           - containerPort: 5000
         resources:
           requests:
+            memory: "64Mi"
+            cpu: "128m"
+          limits: 
             memory: "128Mi"
             cpu: "256m"
-          limits: 
-            memory: "256Mi"
-            cpu: "500m"
-        startupProbe:
-          httpGet:
-            path: /api/comment/list/1
-            port: 5000
-          periodSeconds: 4
-          failureThreshold: 30
-        readinessProbe:
-          httpGet:
-            path: /api/comment/list/1
-            port: 5000
-          periodSeconds: 3
-          failureThreshold: 1
-        livenessProbe:
-          httpGet:
-            path: /api/comment/list/1
-            port: 5000
-          periodSeconds: 5
-          failureThreshold: 1
-          timeoutSeconds: 1
-          successThreshold: 1
