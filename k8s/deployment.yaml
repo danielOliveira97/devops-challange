@@ -18,7 +18,9 @@ spec:
     spec:
       containers:
       - name: comments-app
-        image: APP_IMAGE
+        # image: 00000000000000.dkr.ecr.my-region.amazonaws.com/example-eks:tag
+        # image: REGISTRY/REPO:TAG
+        image: app-image
         ports:
           - containerPort: 5000
         resources:
