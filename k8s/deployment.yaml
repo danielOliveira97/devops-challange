@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: comments-app
-        image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        image: ECR_IMAGE
         ports:
           - containerPort: 5000
         resources:
