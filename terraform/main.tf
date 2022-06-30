@@ -150,7 +150,7 @@ resource "github_actions_secret" "gh_secret_aws_region" {
 resource "github_actions_secret" "gh_secret_kube_config_data" {
   repository       = var.app_github_repository
   secret_name      = "KUBE_CONFIG_DATA"
-  plaintext_value  = local.kubeconfig
+  plaintext_value  = base64encode(local.kubeconfig)
 }
 
 resource "github_actions_secret" "gh_secret_ecr_repository" {
