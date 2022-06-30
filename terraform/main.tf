@@ -75,6 +75,11 @@ module "eks_blueprints_kubernetes_addons" {
   }
 }
 
+module "grafana_prometheus_monitoring" {
+  source  = "git::https://github.com/danielOliveira97/terraform-aws-eks-grafana-prometheus.git"
+  enabled = true
+}
+
 resource "aws_ecr_repository" "app_repository_image" {
   name                 = local.ecr_repository_name
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"

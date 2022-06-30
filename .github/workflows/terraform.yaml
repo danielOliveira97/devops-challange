@@ -57,7 +57,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           cd terraform/
-          terraform plan -no-color -input=false
+          terraform plan -no-color
         continue-on-error: true
 
       - uses: actions/github-script@v6
@@ -89,9 +89,11 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+          TF_CLI_ARGS: '-var-file="env/dev.tfvars"'
         run: |
           cd terraform/
-          terraform apply -target="module.vpc" --auto-approve -input=false
-          terraform apply -target="module.eks_blueprints" --auto-approve -input=false
-          terraform apply -target="module.eks_blueprints_kubernetes_addons" --auto-approve -input=false
-          terraform apply --auto-approve -input=false
+          terraform apply -target="module.vpc" --auto-approve
+          terraform apply -target="module.eks_blueprints" --auto-approve
+          terraform apply -target="module.eks_blueprints_kubernetes_addons" --auto-approve
+          terraform apply --auto-approve
