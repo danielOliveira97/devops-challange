@@ -59,7 +59,7 @@ module "eks_blueprints_kubernetes_addons" {
   enable_amazon_eks_coredns    = true
   enable_amazon_eks_kube_proxy = true
   enable_amazon_eks_vpc_cni    = true
-  enable_amazon_eks_adot      = true
+  enable_amazon_eks_adot       = true
 
   # K8s Add-ons
   #enable_aws_for_fluentbit            = true
@@ -78,18 +78,18 @@ module "eks_blueprints_kubernetes_addons" {
 resource "aws_ecr_repository" "app_repository_image" {
   name                 = local.ecr_repository_name
   image_tag_mutability = var.immutable_ecr_repositories ? "IMMUTABLE" : "MUTABLE"
-  
+
   image_scanning_configuration {
     scan_on_push = false
   }
 }
 
 module "iam_policy" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  source      = "terraform-aws-modules/iam/aws//modules/iam-policy"
   name        = "github-ecr-policy"
   path        = "/"
   description = "Policy for github actions pipelines"
-  policy = <<EOF
+  policy      = <<EOF
 {
   "Version":"2012-10-17",
   "Statement":[
@@ -113,16 +113,16 @@ EOF
 }
 
 module "iam_user" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-  name = local.github_deploy_user
+  source                        = "terraform-aws-modules/iam/aws//modules/iam-user"
+  name                          = local.github_deploy_user
   create_iam_user_login_profile = false
   create_iam_access_key         = true
 }
 
 module "iam_group_with_policies" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-group-with-policies"
-  name = "github-actions"
-  group_users = ["${module.iam_user.iam_user_name}"]
+  source                            = "terraform-aws-modules/iam/aws//modules/iam-group-with-policies"
+  name                              = "github-actions"
+  group_users                       = ["${module.iam_user.iam_user_name}"]
   attach_iam_self_management_policy = true
   custom_group_policy_arns = [
     "${module.iam_policy.arn}",
@@ -130,37 +130,37 @@ module "iam_group_with_policies" {
 }
 
 resource "github_actions_secret" "gh_secret_aws_access_key_id" {
-  repository       = var.app_github_repository
-  secret_name      = "AWS_ACCESS_KEY_ID"
-  plaintext_value  = var.gh_secret_aws_access_key_id
+  repository      = var.app_github_repository
+  secret_name     = "AWS_ACCESS_KEY_ID"
+  plaintext_value = var.gh_secret_aws_access_key_id
 }
 
 resource "github_actions_secret" "gh_secret_aws_secret_access_key" {
-  repository       = var.app_github_repository
-  secret_name      = "AWS_SECRET_ACCESS_KEY"
-  plaintext_value  = var.gh_secret_aws_secret_access_key
+  repository      = var.app_github_repository
+  secret_name     = "AWS_SECRET_ACCESS_KEY"
+  plaintext_value = var.gh_secret_aws_secret_access_key
 }
 
 resource "github_actions_secret" "gh_secret_aws_region" {
-  repository       = var.app_github_repository
-  secret_name      = "AWS_REGION"
-  plaintext_value  = local.region
+  repository      = var.app_github_repository
+  secret_name     = "AWS_REGION"
+  plaintext_value = local.region
 }
 
 resource "github_actions_secret" "gh_secret_kube_config_data" {
-  repository       = var.app_github_repository
-  secret_name      = "KUBE_CONFIG_DATA"
-  plaintext_value  = base64encode(local.kubeconfig)
+  repository      = var.app_github_repository
+  secret_name     = "KUBE_CONFIG_DATA"
+  plaintext_value = base64encode(local.kubeconfig)
 }
 
 resource "github_actions_secret" "gh_secret_ecr_repository" {
-  repository       = var.app_github_repository
-  secret_name      = "ECR_REPOSITORY"
-  plaintext_value  = data.aws_ecr_repository.service.repository_url 
+  repository      = var.app_github_repository
+  secret_name     = "ECR_REPOSITORY"
+  plaintext_value = data.aws_ecr_repository.service.repository_url
 }
 
 resource "github_actions_secret" "gh_secret_eks_cluster_name" {
-  repository       = var.app_github_repository
-  secret_name      = "EKS_CLUSTER_NAME"
-  plaintext_value  = module.eks_blueprints.eks_cluster_id
+  repository      = var.app_github_repository
+  secret_name     = "EKS_CLUSTER_NAME"
+  plaintext_value = module.eks_blueprints.eks_cluster_id
 }
