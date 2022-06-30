@@ -10,6 +10,10 @@ jobs:
   deploy:
     name: deploy to cluster
     runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      EKS_CLUSTER_NAME: ${{ secrets.EKS_CLUSTER_NAME }}
+      
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -33,20 +37,28 @@ jobs:
       run: |
         docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f app/Dockerfile ./app
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$REGISTRY/$REPOSITORY:$IMAGE_TAG"
 
-    - name: deploy to cluster
-      uses: kodermax/kubectl-aws-eks@master
+    - name: Setup kubeconfig
+      id: setup-kubeconfig
+      run: |
+        aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+
+    - name: Deploy k8s yaml
+      id: deploy-k8s-yaml
       env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: comments-app
-        IMAGE_TAG: ${{ github.sha }}
-      with:
-        args: apply -f ./k8s --recursive
-        
-    - name: verify deployment
-      uses: kodermax/kubectl-aws-eks@master
-      env:
-        KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      with:
-        args: rollout status deployment/my-app
+        K8S_YAML_DIR: ./k8s 
+        IMAGE_NAME: ${{ steps.build-image.outputs.image }}
+      run: |
+        # Setup kustomize
+        cd $K8S_YAML_DIR
+        curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        # curl -s -o kustomize --location "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+        chmod u+x ./kustomize
+        ./kustomize edit set ECR_IMAGE=$IMAGE_NAME
+        ./kustomize build . | kubectl apply -f -
+        # Verify deployment
+        kubectl rollout status deployment/$REPOSITORY
+        # List Public IP of cluster
+        kubectl get services -o wide
+        kubectl get ingress
