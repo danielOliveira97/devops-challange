@@ -8,8 +8,8 @@ locals {
   ecr_repository_name = "comments-app"
   github_deploy_user  = "gh_actions_user"
   kubeconfig = yamlencode({
-    apiVersion      = "v1"
-    kind            = "Config"
+    apiVersion = "v1"
+    kind       = "Config"
     clusters = [{
       name = module.eks_blueprints.eks_cluster_id
       cluster = {
@@ -24,15 +24,15 @@ locals {
         user    = data.aws_eks_cluster.cluster.arn
       }
     }]
-    current-context =  data.aws_eks_cluster.cluster.arn
-    preferences: {}
+    current-context = data.aws_eks_cluster.cluster.arn
+    preferences : {}
     users = [{
       name = data.aws_eks_cluster.cluster.arn
       user = {
         exec = {
           apiVersion = "client.authentication.k8s.io/v1alpha1"
-          args        = ["--region","${local.region}","eks", "get-token", "--cluster-name", "${local.cluster_name}"]
-          command     = "aws"
+          args       = ["--region", "${local.region}", "eks", "get-token", "--cluster-name", "${local.cluster_name}"]
+          command    = "aws"
         }
       }
     }]
