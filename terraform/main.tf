@@ -76,7 +76,7 @@ module "eks_blueprints_kubernetes_addons" {
 }
 
 module "grafana_prometheus_monitoring" {
-  source = "git::https://github.com/danielOliveira97/terraform-aws-eks-grafana-prometheus.git"
+  source  = "git::https://github.com/danielOliveira97/terraform-aws-eks-grafana-prometheus.git"
   enabled = true
 }
 
