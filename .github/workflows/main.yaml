@@ -55,7 +55,7 @@ jobs:
         curl -s -o kustomize --location https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         # curl -s -o kustomize --location "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
         chmod u+x ./kustomize
-        ./kustomize edit set image $IMAGE_NAME
+        ./kustomize edit set image app-image=$IMAGE_NAME
         ./kustomize build . | kubectl apply -f -
         # Verify deployment
         kubectl rollout status deployment/$REPOSITORY
