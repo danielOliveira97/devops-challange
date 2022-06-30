@@ -20,21 +20,19 @@ locals {
     contexts = [{
       name = data.aws_eks_cluster.cluster.arn
       context = {
-        cluster = module.eks_blueprints.eks_cluster_id
+        cluster = data.aws_eks_cluster.cluster.arn
         user    = data.aws_eks_cluster.cluster.arn
       }
     }]
+    current-context =  data.aws_eks_cluster.cluster.arn
+    preferences: {}
     users = [{
       name = data.aws_eks_cluster.cluster.arn
       user = {
         exec = {
-          apiVersion = "client.authentication.k8s.io/v1beta1"
+          apiVersion = "client.authentication.k8s.io/v1alpha1"
           args        = ["--region","${local.region}","eks", "get-token", "--cluster-name", "${local.cluster_name}"]
           command     = "aws"
-          env = [{
-            "name" = "AWS_PROFILE"
-            "value" = data.aws_eks_cluster.cluster.arn
-          }]
         }
       }
     }]

@@ -158,3 +158,9 @@ resource "github_actions_secret" "gh_secret_ecr_repository" {
   secret_name      = "ECR_REPOSITORY"
   plaintext_value  = data.aws_ecr_repository.service.repository_url 
 }
+
+resource "github_actions_secret" "gh_secret_eks_cluster_name" {
+  repository       = var.app_github_repository
+  secret_name      = "EKS_CLUSTER_NAME"
+  plaintext_value  = module.eks_blueprints.eks_cluster_id
+}
