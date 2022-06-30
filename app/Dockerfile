@@ -7,4 +7,4 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT gunicorn --log-level debug api:app -b 0.0.0.0
+ENTRYPOINT gunicorn --log-level debug api:app -b 0.0.0.0:5000
