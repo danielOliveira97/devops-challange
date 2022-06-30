@@ -1,65 +1,148 @@
-# Considerações Gerais
+# Desafio DevOps
 
-Você deverá usar este repositório como o repo principal do projeto, i.e., todos os seus commits devem estar registrados aqui, pois queremos ver como você trabalha.
+## Environment Modeling
+<p align="center">
 
-A escolha de tecnologias é livre para a resolução do problema. Utilize os componentes e serviços que melhor domina pois a apresentação na entrega do desafio deverá ser como uma aula em que você explica em detalhes cada decisão que tomou.
+![image](https://user-images.githubusercontent.com/78129381/153622350-dcaf792f-0704-4426-916a-1551dd9fe8b9.png)
 
-Registre tudo: testes que foram executados, ideias que gostaria de implementar se tivesse tempo (explique como você as resolveria, se houvesse tempo), decisões que foram tomadas e seus porquês, arquiteturas que foram testadas e os motivos de terem sido modificadas ou abandonadas. Crie um arquivo COMMENTS.md ou HISTORY.md no repositório para registrar essas reflexões e decisões.
+</p>
 
+## Resources and Tools
 
-# O Problema
+- **Provider:** AWS
+- **IaC:** Terraform
+- **Ingress Controler:** Nginx Ingress
+- **Container Orchestration Tools and Services:** Kubernetes, EKS and Docker
+- **Monitoring:** Grafana and Prometheus
 
-O desafio que você deve resolver é a implantação da aplicação de Comentários em versão API (backend) usando ferramentas open source da sua preferência.
+## How to Deploy
 
-Você precisa criar o ambiente de execução desta API com o maior número de passos automatizados possível, inclusive a esteira de deploy.
+### Prerequisites
 
-A aplicação será uma API REST que está disponível neste repositório. Através dela os internautas enviam comentários em texto de uma máteria e acompanham o que outras pessoas estão falando sobre o assunto em destaque. O funcionamento básico da API consiste em uma rota para inserção dos comentários e uma rota para listagem.
+Ensure that you have installed the following tools in your Mac or Windows Laptop before start working with this module and run Terraform Plan and Apply
 
-Os comandos de interação com a API são os seguintes:
+1. [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+2. [Kubectl](https://Kubernetes.io/docs/tasks/tools/)
+3. [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 
-* Start da app
+### Deployment Steps
 
-```
-cd app
-gunicorn --log-level debug api:app
-```
+#### Step 1: Clone the repo using the command below
 
-* Criando e listando comentários por matéria
-
-```
-# matéria 1
-curl -sv localhost:8000/api/comment/new -X POST -H 'Content-Type: application/json' -d '{"email":"alice@example.com","comment":"first post!","content_id":1}'
-curl -sv localhost:8000/api/comment/new -X POST -H 'Content-Type: application/json' -d '{"email":"alice@example.com","comment":"ok, now I am gonna say something more useful","content_id":1}'
-curl -sv localhost:8000/api/comment/new -X POST -H 'Content-Type: application/json' -d '{"email":"bob@example.com","comment":"I agree","content_id":1}'
-
-# matéria 2
-curl -sv localhost:8000/api/comment/new -X POST -H 'Content-Type: application/json' -d '{"email":"bob@example.com","comment":"I guess this is a good thing","content_id":2}'
-curl -sv localhost:8000/api/comment/new -X POST -H 'Content-Type: application/json' -d '{"email":"charlie@example.com","comment":"Indeed, dear Bob, I believe so as well","content_id":2}'
-curl -sv localhost:8000/api/comment/new -X POST -H 'Content-Type: application/json' -d '{"email":"eve@example.com","comment":"Nah, you both are wrong","content_id":2}'
-
-# listagem matéria 1
-curl -sv localhost:8000/api/comment/list/1
-
-# listagem matéria 2
-curl -sv localhost:8000/api/comment/list/2
+```sh
+git clone https://github.com/danielOliveira97/devops-challange.git
 ```
 
+### Step 2: Config environment
+* Configure AWS CLI with an user with programmatic access and high privileges
+```sh
+aws configure
+```
+* Create s3 bucket for storage tfstate file
+  
+```sh
+aws s3api create-bucket \
+    --bucket <enter-bucket-name> \
+    --region <enter-your-region>
+```
+* Update terraform/backend.tf with the AWS S3 bucket name and key name
+*  Review terraform variable values in variables.tf, local.tf
 
-# O que será avaliado na sua solução?
+#### Step 3: Run Terraform INIT
 
-* Automação da infra, provisionamento dos hosts (IaaS)
+Initialize a working directory with configuration files
 
-* Automação de setup e configuração dos hosts (IaC)
+```sh
+cd terraform
+terraform init
+```
 
-* Pipeline de deploy automatizado
+#### Step 4: Run Terraform PLAN
 
-* Monitoramento dos serviços e métricas da aplicação
+Verify the resources created by this execution
 
+```sh
+export AWS_REGION=<ENTER YOUR REGION>   # Select your own region
+terraform plan
+```
 
-# Dicas
+#### Step 5: Finally, Terraform APPLY
 
-Use ferramentas e bibliotecas open source, mas documente as decisões e porquês;
+**Deploy the pattern**
 
-Automatize o máximo possível;
+```sh
+terraform apply
+```
 
-Em caso de dúvidas, pergunte.
+Enter `yes` to apply.
+
+### Step 6: Finally, Terraform APPLY
+
+We will leverage Terraform's [target](https://learn.hashicorp.com/tutorials/terraform/resource-targeting?in=terraform/cli) functionality to deploy a VPC, an EKS Cluster, and Kubernetes add-ons in separate steps.
+
+**Deploy the VPC**. This step will take roughly 3 minutes to complete.
+
+```
+terraform apply -target="module.vpc"
+```
+
+**Deploy the EKS cluster**. This step will take roughly 14 minutes to complete.
+
+```
+terraform apply -target="module.eks_blueprints"
+```
+
+**Deploy the add-ons**. This step will take rough 10 minutes to complete.
+
+```
+terraform apply -target="module.eks_blueprints_kubernetes_addons"
+```
+
+**Deploy all others resources**. This step will take rough 10 minutes to complete.
+
+```
+terraform apply --auto-approve
+```
+
+### Configure `kubectl` and test cluster
+
+EKS Cluster details can be extracted from terraform output or from AWS Console to get the name of cluster.
+This following command used to update the `kubeconfig` in your local machine where you run kubectl commands to interact with your EKS Cluster.
+
+#### Step 5: Run `update-kubeconfig` command
+
+`~/.kube/config` file gets updated with cluster details and certificate from the below command
+
+```sh
+    aws eks --region <enter-your-region> update-kubeconfig --name <cluster-name>
+```
+
+#### Step 6: List all the worker nodes by running the command below
+
+```sh
+    kubectl get nodes
+```
+
+#### Step 7: List all the pods running in `ingress-nginx` namespace
+
+```sh
+    kubectl get pods -n ingress-nginx
+```
+
+## How to Destroy
+
+The following command destroys the resources created by `terraform apply`
+
+```sh
+cd terraform
+
+terraform destroy -target="module.eks_blueprints_kubernetes_addons.module.ingress_nginx[0]" -auto-approve
+
+terraform destroy -target="module.eks_blueprints_kubernetes_addons.module.aws_load_balancer_controller[0]" -auto-approve
+
+terraform destroy -target="module.eks-blueprints-kubernetes-addons" -auto-approve
+
+terraform destroy -target="module.eks-blueprints" -auto-approve
+
+terraform destroy -auto-approve
+```
