@@ -14,6 +14,7 @@
 - **Ingress Controler:** Nginx Ingress
 - **Container Orchestration Tools and Services:** Kubernetes, EKS and Docker
 - **Monitoring:** Grafana and Prometheus
+- **Logs** AWS for Fluent Bit and CloudWatch Logs for Fluent Bit
 - **CI/CD:** Github Actions
 
 ## How to Deploy
