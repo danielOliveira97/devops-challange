@@ -46,7 +46,7 @@ jobs:
       - name: Terraform Validate
         id: validate
         env:
-          TF_CLI_ARGS: '-var github_token=${{github.token}}'
+          TF_CLI_ARGS: '-var="github_token=${{github.token}}"'
         working-directory: ./terraform
         run: |
           terraform validate -no-color
@@ -55,7 +55,7 @@ jobs:
         id: plan
         if: github.event_name == 'pull_request'
         env:
-          TF_CLI_ARGS: '-var github_token=${{github.token}}'
+          TF_CLI_ARGS: '-var="github_token=${{github.token}}"'
         working-directory: ./terraform
         run: |
           terraform plan -no-color
@@ -91,7 +91,7 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
-          TF_CLI_ARGS: '-var github_token=${{github.token}}'
+          TF_CLI_ARGS: '-var="github_token=${{github.token}}"'
         working-directory: ./terraform
         run: |
           terraform apply -target="module.vpc" --auto-approve
