@@ -45,8 +45,6 @@ jobs:
       
       - name: Terraform Validate
         id: validate
-        env:
-          TF_CLI_ARGS: '-var="github_token=${{github.token}}"'
         working-directory: ./terraform
         run: |
           terraform validate -no-color
