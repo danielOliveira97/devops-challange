@@ -8,6 +8,7 @@ on:
       - app/**
       - k8s/**
       - .github/workflows/**
+  pull_request:
 jobs:
   deploy:
     name: deploy to cluster
