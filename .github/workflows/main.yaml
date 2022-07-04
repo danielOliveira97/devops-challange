@@ -9,8 +9,11 @@ on:
       - k8s/**
       - .github/workflows/**
   pull_request:
+    types:
+      - closed
 jobs:
   deploy:
+    if: github.event.pull_request.merged == true
     name: deploy to cluster
     runs-on: ubuntu-latest
     env:
