@@ -134,18 +134,6 @@ module "iam_group_with_policies" {
   ]
 }
 
-resource "github_actions_secret" "gh_secret_aws_access_key_id" {
-  repository      = var.app_github_repository
-  secret_name     = "AWS_ACCESS_KEY_ID"
-  plaintext_value = var.gh_secret_aws_access_key_id
-}
-
-resource "github_actions_secret" "gh_secret_aws_secret_access_key" {
-  repository      = var.app_github_repository
-  secret_name     = "AWS_SECRET_ACCESS_KEY"
-  plaintext_value = var.gh_secret_aws_secret_access_key
-}
-
 resource "github_actions_secret" "gh_secret_aws_region" {
   repository      = var.app_github_repository
   secret_name     = "AWS_REGION"
